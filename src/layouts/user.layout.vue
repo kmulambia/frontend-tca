@@ -43,7 +43,7 @@
           <q-item clickable v-ripple class="">
             <q-item-section class="text-right">
               <q-item-label class="text-capitalize"
-                >Admin : {{ user.name }}</q-item-label
+                >User : {{ user.name }}</q-item-label
               >
               <q-item-label class="text-lowercase" caption>
                 {{ user.email }}</q-item-label

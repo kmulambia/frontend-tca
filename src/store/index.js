@@ -9,7 +9,10 @@ import log from './log';
 import report from './report';
 import partner from './partner';
 import partnerType from './partnerType';
-
+import admin0 from './admin0';
+import admin1 from './admin1';
+import admin2 from './admin2';
+import admin3 from './admin3';
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -29,7 +32,11 @@ export default store(function (/* { ssrContext } */) {
       log,
       partner,
       partnerType,
-      report
+      report,
+      admin0,
+      admin1,
+      admin2,
+      admin3
     },
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only

@@ -112,22 +112,3 @@ export const remove = async (context, id) => {
     });
 };
 
-export const recover = async (context, id) => {
-  return await axios
-    .post(resource + "/recovery/" + id, {}, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-type": "Application/json",
-        Authorization: `Bearer ${context.rootGetters["session/getToken"]}`
-      }
-    })
-    .then(response => {
-      var result = response.data;
-      return result;
-    })
-    .catch(error => {
-      if (error.response) {
-        throw error.response.data.error;
-      }
-    });
-};

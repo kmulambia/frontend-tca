@@ -26,6 +26,16 @@ export default () => {
         icon: "home",
         path: "/user/home",
       },
+      {
+        title: 'reporting',
+        icon: "text_snippet",
+        path: "/user/reporting",
+      },
+      {
+        title: 'response',
+        icon: "medical_services",
+        path: "/user/response",
+      },
     ],
     options: [
       {

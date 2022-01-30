@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const resource = process.env.API + "/partners";
+const resource = process.env.API + "/admin-1";
 
-export const get = async (context, id) => {
-  if (id == null) {
+export const get = async (context, admin1Pcode) => {
+  if (admin1Pcode == null) {
     return await axios
       .get(
         resource +
-        '?filter={"where": {},"include": ["partnerType"]}',
+        '?filter={"where": {},"include": []}',
         {
           headers: {
             "Access-Control-Allow-Origin": "*",
@@ -25,13 +25,13 @@ export const get = async (context, id) => {
           throw error.response.data.error;
         }
       });
-  } else if (id != null) {
+  } else if (admin1Pcode != null) {
     return await axios
       .get(
         resource +
         "/" +
-        id +
-        '?filter={"include": ["partnerType"]}',
+        admin1Pcode +
+        '?filter={"include": []}',
         {
           headers: {
             "Access-Control-Allow-Origin": "*",
@@ -74,7 +74,7 @@ export const create = async (context, data) => {
 
 export const update = async (context, data) => {
   return await axios
-    .patch(resource + "/" + data.id, data, {
+    .patch(resource + "/" + data.admin1Pcode, data, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-type": "Application/json",
@@ -92,9 +92,9 @@ export const update = async (context, data) => {
     });
 };
 
-export const remove = async (context, id) => {
+export const remove = async (context, admin1Pcode) => {
   return await axios
-    .delete(resource + "/" + id, {
+    .delete(resource + "/" + admin1Pcode, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-type": "Application/json",
@@ -112,3 +112,27 @@ export const remove = async (context, id) => {
     });
 };
 
+export const getByAdmin0 = async (context, admin0Pcode) => {
+  return await axios
+    .get(
+      resource +
+      '?filter={"where": {"admin0Pcode":' + admin0Pcode + '},"include": []}',
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-type": "Application/json",
+          Authorization: `Bearer ${context.rootGetters["session/getToken"]}`
+        }
+      }
+    )
+    .then(response => {
+      var result = response.data;
+      return result;
+    })
+    .catch(error => {
+      if (error.response) {
+        throw error.response.data.error;
+      }
+    });
+
+};

@@ -80,47 +80,60 @@ const routes = [
       }
     }
   },
- 
 
- //User
- {
-  path: '/user',
-  component: () => import('layouts/user.layout.vue'),
-  children: [
-    {
-      path: '/user',
-      redirect: '/user/home',
-    },
-    {
-      path: '/user/home',
-      component: () => import('pages/user/home/index.page.vue'),
-    },
 
-    //SETTINGS
-    {
-      path: '/user/settings',
-      component: () => import('pages/user/settings/index.page.vue'),
-    },
-    //OTHERS
-    {
-      path: '/user/help',
-      component: () => import('pages/help.page.vue'),
-    },
-    {
-      path: '/user/about',
-      component: () => import('pages/about.page.vue'),
-    },
+  //User
+  {
+    path: '/user',
+    component: () => import('layouts/user.layout.vue'),
+    children: [
+      {
+        path: '/user',
+        redirect: '/user/home',
+      },
+      {
+        path: '/user/home',
+        component: () => import('pages/user/home/index.page.vue'),
+      },
 
-  ],
-  beforeEnter: (to, from, next) => {
-    let role = SessionStorage.getItem(serial + "-ROLE");
-    if (SessionStorage.has(serial + "-JWT") == true && role.name == "user") {
-      next();
-    } else {
-      next("/signin");
+      //Reporting
+      {
+        path: '/user/reporting',
+        component: () => import('pages/user/reporting/index.page.vue'),
+      },
+      //Response
+
+      {
+        path: '/user/response',
+        component: () => import('pages/user/response/index.page.vue'),
+      },
+
+
+      //SETTINGS
+      {
+        path: '/user/settings',
+        component: () => import('pages/user/settings/index.page.vue'),
+      },
+      //OTHERS
+      {
+        path: '/user/help',
+        component: () => import('pages/help.page.vue'),
+      },
+      {
+        path: '/user/about',
+        component: () => import('pages/about.page.vue'),
+      },
+
+    ],
+    beforeEnter: (to, from, next) => {
+      let role = SessionStorage.getItem(serial + "-ROLE");
+      if (SessionStorage.has(serial + "-JWT") == true && role.name == "user") {
+        next();
+      } else {
+        next("/signin");
+      }
     }
-  }
-},
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
