@@ -6,6 +6,9 @@ import session from './session';
 import user from './user';
 import role from './role';
 import log from './log';
+import report from './report';
+import partner from './partner';
+import partnerType from './partnerType';
 
 /*
  * If not building with SSR mode, you can
@@ -23,7 +26,10 @@ export default store(function (/* { ssrContext } */) {
       session,
       user,
       role,
-      log
+      log,
+      partner,
+      partnerType,
+      report
     },
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only

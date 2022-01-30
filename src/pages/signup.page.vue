@@ -39,6 +39,22 @@
             unmasked-value
             hint="Example : (099) 123 4567 / (088) 123 4567"
           />
+          <q-select
+             class="q-mb-sm"
+            color="primary"
+              label="Partner"
+              hint=" "
+              bg-color="white"
+              v-model="model.partner"
+              :options="partners"
+              :option-value="(opt) => opt"
+              :option-label="(opt) => opt.name"
+              :rules="[
+                (val) =>
+                  (val !== null && val !== '') || 'You must make selection',
+              ]"
+              lazy-rules
+            />
 
           <q-input
             class="q-mb-sm"
@@ -115,7 +131,7 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 //Declarations
@@ -128,17 +144,53 @@ const model = reactive({
   email: "",
   phone: "",
   password: "",
+  partner:null,
   status: true,
 });
 const isPwd = ref(true);
 const confirm = ref("");
 const iAcceptTerms = ref("");
+const partners = reactive([]);
+//Mounted
+onMounted(() => {
+  getPartners();
+});
 //Functions
+const getPartners = async () => {
+  $q.loading.show();
+  
+  await $store
+    .dispatch("partner/get")
+    .then(
+      (response) => {
+        partners.push(...response);
+      },
+      (reason) => {
+        $q.notify({
+          type: "error",
+          message: "Failed to load partners",
+          caption: !reason.message
+            ? " you may be experiencing bad network "
+            : reason.message,
+        });
+      }
+    )
+    .finally(() => {
+      $q.loading.hide();
+    });
+};
+
 function onSubmit() {
   $q.loading.show();
   //Process
+  console.log(model)
+  /***/
+  var item = model 
+  item.partnerId = item.partner.id;
+  delete item.partner;
+  /***/
   $store
-    .dispatch("session/signup", model)
+    .dispatch("session/signup", item)
     .then(
       () => {
         //success

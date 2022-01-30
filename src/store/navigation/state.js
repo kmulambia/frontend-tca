@@ -31,17 +31,17 @@ export default () => {
       {
         title: "settings",
         icon: "settings",
-        path: "/admin/settings",
+        path: "/settings",
       },
       {
         title: "help",
         icon: "help",
-        path: "/admin/help",
+        path: "/help",
       },
       {
         title: "about",
         icon: "info",
-        path: "/admin/about",
+        path: "/about",
       }
     ]
   }

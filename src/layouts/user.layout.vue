@@ -43,15 +43,14 @@
           <q-item clickable v-ripple class="">
             <q-item-section class="text-right">
               <q-item-label class="text-capitalize"
-                >Admin : {{user.name}}</q-item-label
+                >Admin : {{ user.name }}</q-item-label
               >
               <q-item-label class="text-lowercase" caption>
-                {{user.email}}</q-item-label
+                {{ user.email }}</q-item-label
               >
             </q-item-section>
             <q-menu auto-close fit anchor="bottom middle" self="top middle">
               <q-list dense style="min-width: 100%" class="text-left">
-                
                 <q-item @click="onSignout()" clickable>
                   <!-- <q-item-section avatar>
                     <q-icon  name="logout" />
@@ -94,7 +93,7 @@
           clickable
           v-for="option in options"
           :key="option.title"
-          :to="'/'+role.name+option.path"
+          :to="'/' + role.name + option.path"
         >
           <q-item-section v-if="option.icon" avatar>
             <q-icon :name="option.icon" />
@@ -141,7 +140,7 @@ const role = reactive($store.getters["session/getRole"]);
 var year = date.formatDate(Date.now(), "YYYY");
 const links = reactive(
   computed({
-    get: () => $store.state.navigation.admin,
+    get: () => $store.state.navigation.user,
   })
 );
 
