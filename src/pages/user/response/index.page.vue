@@ -1,7 +1,8 @@
 
 <template>
-  <q-page class="bg-white q-pa-md">
-    <div class="q-pa-md bg-grey-1">
+  <q-page class="bg-white q-pa-md text-center">
+    In Development
+    <!-- <div class="q-pa-md bg-grey-1">
       <q-breadcrumbs class="text-capitalize">
         <q-breadcrumbs-el label="Home" to="/user/home" />
         <q-breadcrumbs-el label="Response" />
@@ -30,12 +31,13 @@
           <create-report-form v-on:create="createReport" class="q-ma-xs" />
         </q-card-section>
       </q-card>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
+
 <script setup>
-import { useQuasar } from "quasar";
+import { useQuasar, date, exportFile } from "quasar";
 import { ref, reactive, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
@@ -48,15 +50,80 @@ const $route = useRoute();
 //Variables
 const id = ref(null);
 const model = ref({});
+const user = reactive($store.getters["session/getUser"]);
+const rows = reactive([]);
+const pagination = reactive({
+  sortBy: "desc",
+  descending: false,
+  rowsPerPage: 40,
+});
+const filter = ref("");
+const visibleColumns = ref([
+  "district",
+  "ta",
+  "hh",
+  "injuries",
+  "deaths",
+  "lw",
+  "pg",
+  "u5",
+  "created",
+]);
 //Mounted
 onMounted(() => {
   id.value = $route.params.id;
+  getMyReports(user.id);
 });
 //Functions
-async function createReport(item) {}
-///Get Member
+//GetReports
+const getMyReports = async (userId) => {
+  $q.loading.show();
+  await $store
+    .dispatch("report/getMyReports", userId)
+    .then(
+      (response) => {
+        rows.push(...response);
+      },
+      (reason) => {
+        $q.notify({
+          type: "error",
+          message: "Failed to load my Reports",
+          caption: !reason.message
+            ? " you may be experiencing bad network "
+            : reason.message,
+        });
+      }
+    )
+    .finally(() => {
+      $q.loading.hide();
+    });
+};
+//Admin2s
+const getAdmin2s = async () => {
+  $q.loading.show();
+  await $store
+    .dispatch("admin2/get")
+    .then(
+      (response) => {
+        admin2s.push(...response);
+      },
+      (reason) => {
+        $q.notify({
+          type: "error",
+          message: "Failed to load admin 2s",
+          caption: !reason.message
+            ? " you may be experiencing bad network "
+            : reason.message,
+        });
+      }
+    )
+    .finally(() => {
+      $q.loading.hide();
+    });
+};
 </script>
 <style lang="sass" scoped>
 .point-card
   width: 100%
 </style>
+
