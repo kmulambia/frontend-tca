@@ -25,7 +25,7 @@
             <q-select
               class="text-capitalize"
               label="District"
-              :hint="'District has  ' + admin3s.length + ' TAs'"
+              :hint="'District has ' + admin3s.length + ' TAs'"
               bg-color="white"
               v-model="model.admin2"
               :options="admin2s"
@@ -82,9 +82,17 @@
               type="number"
               v-model="model.HH"
               label="HH"
-              :rules="[
-                (val) => (val && val >= 0) || 'please enter  number',
-              ]"
+              :rules="[(val) => val >= 0 || 'please enter  number']"
+            />
+            <q-input
+              outlined
+              dense
+              class="col"
+              color="primary"
+              type="number"
+              v-model="model.injuries"
+              label="Injuries"
+              :rules="[(val) => val >= 0 || 'please enter  number']"
             />
             <q-input
               outlined
@@ -94,9 +102,7 @@
               type="number"
               v-model="model.deaths"
               label="Deaths "
-              :rules="[
-            (val) => (val && val >= 0) || 'please enter  number',
-              ]"
+              :rules="[(val) => val >= 0 || 'please enter  number']"
             />
           </q-card-section>
           <q-card-section class="q-gutter-sm row q-pt-none">
@@ -108,9 +114,7 @@
               type="number"
               v-model="model.LW"
               label="LW"
-              :rules="[
-                (val) => (val && val >= 0) || 'please enter  number',
-              ]"
+              :rules="[(val) => val >= 0 || 'please enter  number']"
             />
             <q-input
               outlined
@@ -120,9 +124,7 @@
               type="number"
               v-model="model.PG"
               label="PG"
-              :rules="[
-               (val) => (val && val >= 0) || 'please enter  number',
-              ]"
+              :rules="[(val) => val >= 0 || 'please enter  number']"
             />
             <q-input
               outlined
@@ -132,15 +134,19 @@
               type="number"
               v-model="model.U5"
               label="U5"
-              :rules="[
-                (val) => (val && val.length > 0) || 'please enter  number',
-              ]"
+              :rules="[(val) => val >= 0 || 'please enter  number']"
             />
           </q-card-section>
           <q-separator />
 
           <q-card-actions align="right" class="text-primary">
-            <q-btn flat class="text-capitalize" label="cancel" v-close-popup />
+            <q-btn
+              flat
+              class="text-capitalize"
+              label="cancel"
+              v-on:click="clear"
+              v-close-popup
+            />
             <q-btn
               class="q-ml-sm text-capitalize"
               label="add"
@@ -163,7 +169,7 @@ import { useRouter } from "vue-router";
 const $q = useQuasar();
 const $store = useStore();
 const $router = useRouter();
-const emit = defineEmits(["add"]);
+const emit = defineEmits(["create"]);
 //Variables
 const model = reactive({
   admin2: null,
@@ -190,24 +196,40 @@ onMounted(() => {
 watch(
   () => model.admin2,
   (value, prevValue) => {
-    admin3s.splice(0, admin3s.length);
-    getAdmin3s(value.admin2Pcode);
+    if (value != null) {
+      model.admin3 = null;
+      admin3s.splice(0, admin3s.length);
+      getAdmin3s(value.admin2Pcode);
+    }
+  }
+);
+watch(
+  () => model.admin3,
+  (value, prevValue) => {
+    if (value != null) {
+    getLatest(value)
+    }
   }
 );
 //Functions
 const onSubmit = () => {
-  emit("add", model);
-  model.value = {
-    name: "",
-    phone: "",
-    email: "",
-    status: true,
-    role: null,
-    password: "",
-    roleId: "",
-  };
+  emit("create", Object.assign({}, model));
+clear();
   addReportForm.value = false;
 };
+const clear = () => {
+  admin3s.splice(0, admin3s.length);
+  model.admin2 = null;
+  model.admin3 = null;
+  model.camps = [];
+  model.HH = 0;
+  model.deaths = 0;
+  model.injuries = 0;
+  model.LW = 0;
+  model.PG = 0;
+  model.U5 = 0;
+};
+
 const getAdmin2s = async () => {
   $q.loading.show();
   await $store
@@ -230,6 +252,39 @@ const getAdmin2s = async () => {
       $q.loading.hide();
     });
 };
+const getLatest = async (data) => {
+      $q.loading.show();
+  await   $store
+        .dispatch("report/getLatest", {
+          admin2Pcode: data.admin2Pcode,
+          admin3Pcode: data.admin3Pcode,
+        })
+        .then(
+          (response) => {
+            if (response[0] != undefined) {
+              model.camps = response[0].camps;
+              model.HH = Number(response[0].HH);
+              model.deaths = Number(response[0].deaths);
+              model.injuries = Number(response[0].injuries);
+              model.LW = Number(response[0].LW);
+              model.PG = Number(response[0].PG);
+              model.U5 = Number(response[0].U5);
+            }
+          },
+          (reason) => {
+            $q.notify({
+              type: "error",
+              message: "Failed to load latest report in this District and TA",
+              caption: !reason.message
+                ? " you may be experiencing bad network "
+                : reason.message,
+            });
+          }
+        ).finally(() => {
+        $q.loading.hide();
+      });
+};
+
 const getAdmin3s = async (admin2Pcode) => {
   $q.loading.show();
   await $store

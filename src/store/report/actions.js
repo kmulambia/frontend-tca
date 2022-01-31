@@ -112,3 +112,53 @@ export const remove = async (context, id) => {
     });
 };
 
+export const getLatest = async (context, data) => {
+
+  return await axios
+    .get(
+      resource +
+      '?filter={"where": {"admin2Pcode":"' + data.admin2Pcode + '","admin3Pcode":"' + data.admin3Pcode + '"},"limit": 1,"order": "created DESC","include": ["user"]}',
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-type": "Application/json",
+          Authorization: `Bearer ${context.rootGetters["session/getToken"]}`
+        }
+      }
+    )
+    .then(response => {
+      var result = response.data;
+      return result;
+    })
+    .catch(error => {
+      if (error.response) {
+        throw error.response.data.error;
+      }
+    });
+};
+
+export const getMyReports = async (context, userId) => {
+
+  return await axios
+    .get(
+      resource +
+      '?filter={"where": {"userId":"' + userId + '"},"order": "created DESC","include": ["user"]}',
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-type": "Application/json",
+          Authorization: `Bearer ${context.rootGetters["session/getToken"]}`
+        }
+      }
+    )
+    .then(response => {
+      var result = response.data;
+      return result;
+    })
+    .catch(error => {
+      if (error.response) {
+        throw error.response.data.error;
+      }
+    });
+};
+
