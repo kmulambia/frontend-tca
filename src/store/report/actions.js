@@ -162,3 +162,27 @@ export const getMyReports = async (context, userId) => {
     });
 };
 
+export const getComplete = async (context) => {
+
+  return await axios
+    .get(
+      resource +'/complete?',
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-type": "Application/json",
+          Authorization: `Bearer ${context.rootGetters["session/getToken"]}`
+        }
+      }
+    )
+    .then(response => {
+      var result = response.data;
+      return result;
+    })
+    .catch(error => {
+      if (error.response) {
+        throw error.response.data.error;
+      }
+    });
+};
+
