@@ -32,7 +32,7 @@ export default () => {
         path: "/user/reporting",
       },
       {
-        title: 'response',
+        title: 'response (5Ws)',
         icon: "medical_services",
         path: "/user/response",
       },
