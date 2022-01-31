@@ -8,9 +8,9 @@
       </q-breadcrumbs>
     </div>
     <q-separator class="q-mt-md q-mb-md" />
-    <div class="flex flex-center">
-      <q-card flat bordered style="width: 800px; max-width: 80vw">
-        <q-card-section class="q-gutter-sm row">
+    <div class="flex flex-center column">
+      <q-card flat bordered>
+        <q-card-section class="q-gutter-sm row"  style="width: 1000px; max-width: 80vw" >
           <q-card :class="'point-card bg-blue-5'" flat bordered>
             <q-card-section class="q-pt-xs">
               <div class="text-caption text-white text-uppercase">
@@ -32,7 +32,7 @@
       </q-card>
       <q-separator class="q-mt-md q-mb-md" />
       <q-table
-      style="width: 800px; max-width: 80vw"
+       style="width: 1000px; max-width: 80vw" 
         dense
         flat
         :rows="rows"

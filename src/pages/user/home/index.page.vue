@@ -24,6 +24,84 @@
         />
       </q-card-section>
     </q-card>
+     <q-separator class="q-mt-md q-mb-md" />
+      <q-table 
+        dense
+        flat
+        :rows="rows"
+        :columns="columns"
+        color="primary"
+        row-key="id"
+        :visible-columns="visibleColumns2"
+        :filter="filter"
+        :pagination="pagination"
+      >
+        <template v-slot:top-left>
+          <span class="text-capitalize">Recent updates</span>
+        </template>
+        <template v-slot:top-right="props">
+          <q-select
+            class="q-ma-xs"
+            v-model="visibleColumns"
+            multiple
+            outlined
+            dense
+            options-dense
+            :display-value="$q.lang.table.columns"
+            emit-value
+            map-options
+            :options="columns"
+            option-value="name"
+            options-cover
+            style="min-width: 100px"
+          />
+          <q-input
+            class="q-ma-xs"
+            outlined
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="Search"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <q-btn
+            class="q-ma-xs"
+            color="primary"
+            :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+            :label="props.inFullscreen ? 'exit fullscreen' : 'enter fullscreen'"
+            @click="props.toggleFullscreen"
+              style="min-width: 100px"
+          />
+          <q-btn
+            color="primary"
+            icon="archive"
+            label="Export to csv"
+            @click="exportTable"
+              style="min-width: 100px"
+          />
+        </template>
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th
+              class="text-capitalize"
+              v-for="col in props.cols"
+              :key="col.name"
+              :props="props"
+              >{{ col.label }}</q-th
+            >
+          </q-tr>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td v-for="col in props.cols" :key="col.name" :props="props">
+              {{ col.value }}
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
   </q-page>
 </template>
 
@@ -60,6 +138,17 @@ const visibleColumns = ref([
   "PG",
   "U5",
 ]);
+const visibleColumns2 = ref([
+  "district",
+  "ta",
+  "camps",
+  "hh",
+  "injuries",
+  "deaths",
+  "LW",
+  "PG",
+  "U5",
+]);
 const columns = reactive([
   {
     name: "district",
@@ -84,7 +173,8 @@ const columns = reactive([
     name: "camps",
     label: "Camps",
     align: "left",
-    field: "camps",
+    field: (row) => row.camps,
+    format: (val) => val.join(", "),
     sortable: true,
     classes: "text-capitalize",
     style: "width:50px",
@@ -178,7 +268,9 @@ const getMyReports = async (userId) => {
           return { admin2Pcode: a.admin2Pcode, admin2Name_en: a.admin2Name_en };
         });
         admin2s.push(
-          ...new Map(district.map((item) => [item['admin2Pcode'], item])).values()
+          ...new Map(
+            district.map((item) => [item["admin2Pcode"], item])
+          ).values()
         );
         refresh.value = Math.random();
       },
@@ -226,9 +318,59 @@ const getReportsByAdmin2 = (admin2Pcode) => {
     return item.admin2Pcode === admin2Pcode;
   });
 };
+//Export Table
+function exportTable() {
+  // naive encoding to csv format
+  const content = [columns.map((col) => wrapCsvValue(col.label))]
+    .concat(
+      rows.map((row) =>
+        columns
+          .map((col) =>
+            wrapCsvValue(
+              typeof col.field === "function"
+                ? col.field(row)
+                : row[col.field === void 0 ? col.name : col.field],
+              col.format
+            )
+          )
+          .join(",")
+      )
+    )
+    .join("\r\n");
+
+  const status = exportFile(
+    user.email + "-reports.csv",
+    content,
+    "text/csv"
+  );
+
+  if (status !== true) {
+    $q.notify({
+      message: "Browser denied file download...",
+      color: "negative",
+      icon: "warning",
+    });
+  }
+}
+function wrapCsvValue(val, formatFn) {
+  let formatted = formatFn !== void 0 ? formatFn(val) : val;
+
+  formatted =
+    formatted === void 0 || formatted === null ? "" : String(formatted);
+
+  formatted = formatted.split('"').join('""');
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`;
+}
 </script>
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  max-width: 40%
+  max-width: 45%
 </style>

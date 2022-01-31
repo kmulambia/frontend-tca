@@ -2,7 +2,7 @@
   <q-page class="flex flex-center">
     <img
       alt="Amphibia"
-      src="~assets/amp-logo.png"
+      src="~assets/malawi.png"
       style="width: 250px; height: auto"
     >
   </q-page>
